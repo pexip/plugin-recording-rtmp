@@ -1,0 +1,9 @@
+{
+  "editor.tabSize": 2,
+  "xml.preferences.quoteStyle": "single",
+  "javascript.format.semicolons": "remove",
+  "typescript.format.semicolons": "remove",
+  "typescript.preferences.quoteStyle": "single",
+  "javascript.preferences.quoteStyle": "single",
+  "editor.rulers": [80,120]
+}
