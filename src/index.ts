@@ -28,6 +28,7 @@ fetch('./config.json')
 
 let recorder: Participant | null = null
 let recorderUri = ''
+
 plugin.events.participantLeft.add(async ({ id, participant }) => {
   if (id === 'main' && participant.uri === recorderUri) {
     recorder = null
@@ -40,7 +41,7 @@ const btn = await plugin.ui.addButton(uiState).catch(e => {
 })
 
 const onBtnClick = async (): Promise<void> => {
-  if (recorder != null) {
+  if (recorder !== null) {
     await stopRecording()
   } else {
     let recordingAddress = config?.recordingAddress ?? ''
@@ -48,7 +49,7 @@ const onBtnClick = async (): Promise<void> => {
     if (recordingAddress === '') {
       const input = await plugin.ui.showForm({
         title: 'Start recording',
-        description: 'The recording address should be a valid RTMPS address',
+        description: 'The recording address should be a valid RTMPS address.',
         form: {
           elements: {
             recordingAddress: {
@@ -88,7 +89,7 @@ const startRecording = async (recordingAddress: string): Promise<void> => {
 
 const stopRecording = async (): Promise<void> => {
   void plugin.ui.showToast({ message: 'Stopping recorder' })
-  if (recorder != null) {
+  if (recorder !== null) {
     const response = await recorder.disconnect()
     if (response?.data.status === 'success') {
       recorder = null
