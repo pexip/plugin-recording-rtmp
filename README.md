@@ -1,11 +1,11 @@
 # Web App 3 Plugin: Recording RTMP
 
-Plugin that can be used to record a conference. Internally, it sends the video through RTMP to a server that support this kind of streams. It can use RTMP or RTMPS, but it's strongly recommended to use RTMPS.
+The recording RTMP plugin can be used to record hte audio and video from any conference. Internally, it sends the media through RTMP to a server that support this kind of streams. It can use RTMP or RTMPS, but it's strongly recommended to use RTMPS.
 
 It can be configured in two modes:
 
-- **Dynamic RTMP URI:** Each time the user starts a recording, they will be asked to enter the RTMP URI. It's flexible, but the user has to know the URI and write it each time.
-- **Static RTMP URI:** The URI is defined in a configuration file and can only be changed by a Pexip Infinity Administrator. When the user click on the plugin button, the recording will start automatically without the need of entering any additional data.
+- **Dynamic RTMP URI:** Each time the user starts a recording, they will be asked to enter the RTMP URI. It's flexible, but it could be annoying for the user if they always use the same address.
+- **Static RTMP URI:** The URI is defined in a configuration file and can only be changed by an administrator. When the user click on the plugin button, the recording will start automatically without the need of entering any additional data.
 
 ## Configure plugin
 
@@ -22,7 +22,7 @@ If you want to run the plugin with **dynamic RTMP URI** you should remove the `r
 }
 ```
 
-In case we want to define an **Static RTMP URI**, you only only have to define it in the file:
+In case you want to define an **static RTMP URI**, you only only have to define it in the file:
 
 ```json
 {
@@ -48,7 +48,7 @@ The plugin will be served from https://localhost:5173, but you should access it 
 
 ## Build for production
 
-To create a package you need to install first all the dependencies:
+To create a package, you will need to install first all the dependencies:
 
 ```bash
 $ npm i
