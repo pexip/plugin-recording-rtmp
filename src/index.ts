@@ -28,11 +28,27 @@ fetch('./config.json')
 
 let recorder: Participant | null = null
 let recorderUri = ''
+let recorderStartTime = 0
+
+plugin.events.participants.add(async ({ id, participants }) => {
+  const participant = participants.find((participant) => participant.uri === recorderUri)
+  if (id === 'main' && participant?.startTime !== undefined && participant?.startTime !== null) {
+    if (recorderStartTime === 0) {
+      recorderStartTime = participant?.startTime ?? 0
+      await plugin.ui.showToast({ message: 'Recording started' })
+    }
+  }
+})
 
 plugin.events.participantLeft.add(async ({ id, participant }) => {
   if (id === 'main' && participant.uri === recorderUri) {
     recorder = null
     await changeButtonInactive()
+    if (participant.startTime === null) {
+      await plugin.ui.showToast({ message: 'Start recording failed' })
+    } else {
+      await plugin.ui.showToast({ message: 'Recording stopped' })
+    }
   }
 })
 
@@ -54,7 +70,8 @@ const onBtnClick = async (): Promise<void> => {
           elements: {
             recordingAddress: {
               name: 'Recording address',
-              type: 'text'
+              type: 'text',
+              placeholder: 'rtmps://...'
             }
           },
           submitBtnTitle: 'Start recording'
@@ -71,6 +88,12 @@ const onBtnClick = async (): Promise<void> => {
 btn?.onClick.add(onBtnClick)
 
 const startRecording = async (recordingAddress: string): Promise<void> => {
+  recorderStartTime = 0
+  if (!recordingAddress.startsWith('rtmps://') && !recordingAddress.startsWith('rtmp://')) {
+    await plugin.ui.showToast({ message: 'Invalid recording address' })
+    return
+  }
+
   recorderUri = recordingAddress
 
   await changeButtonActive()
@@ -88,7 +111,6 @@ const startRecording = async (recordingAddress: string): Promise<void> => {
 }
 
 const stopRecording = async (): Promise<void> => {
-  void plugin.ui.showToast({ message: 'Stopping recorder' })
   if (recorder !== null) {
     const response = await recorder.disconnect()
     if (response?.data.status === 'success') {
