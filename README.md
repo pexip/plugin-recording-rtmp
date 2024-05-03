@@ -5,7 +5,7 @@ The recording RTMP plugin can be used to record the audio and video from any con
 It can be configured in two modes:
 
 - **Dynamic RTMP URI:** Each time the user starts a recording, they will be asked to enter the RTMP URI. It's flexible, but it could be annoying for the user if they always use the same address.
-- **Static RTMP URI:** The URI is defined in a configuration file and can only be changed by an administrator. When the user click on the plugin button, the recording will start automatically without the need of entering any additional data.
+- **Static RTMP URI:** The URI is defined in a configuration file and can only be changed by an administrator. When the user click on the plugin button, the recording will start automatically without the need for entering any additional data.
 
 ## Configure plugin
 
