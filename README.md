@@ -48,7 +48,7 @@ The plugin will be served from https://localhost:5173, but you should access it 
 
 ## Build for production
 
-To create a package, you will need to install first all the dependencies:
+To create a package, you will need to first install all the dependencies:
 
 ```bash
 $ npm i
