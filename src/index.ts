@@ -28,17 +28,6 @@ fetch('./config.json')
 
 let recorder: Participant | null = null
 let recorderUri = ''
-let recorderStartTime = 0
-
-plugin.events.participants.add(async ({ id, participants }) => {
-  const participant = participants.find((participant) => participant.uri === recorderUri)
-  if (id === 'main' && participant?.startTime !== undefined && participant?.startTime !== null) {
-    if (recorderStartTime === 0) {
-      recorderStartTime = participant?.startTime ?? 0
-      await plugin.ui.showToast({ message: 'Recording started' })
-    }
-  }
-})
 
 plugin.events.participantLeft.add(async ({ id, participant }) => {
   if (id === 'main' && participant.uri === recorderUri) {
@@ -52,7 +41,7 @@ plugin.events.participantLeft.add(async ({ id, participant }) => {
   }
 })
 
-const btn = await plugin.ui.addButton(uiState).catch(e => {
+const btn = await plugin.ui.addButton(uiState).catch((e) => {
   console.warn(e)
 })
 
@@ -88,8 +77,10 @@ const onBtnClick = async (): Promise<void> => {
 btn?.onClick.add(onBtnClick)
 
 const startRecording = async (recordingAddress: string): Promise<void> => {
-  recorderStartTime = 0
-  if (!recordingAddress.startsWith('rtmps://') && !recordingAddress.startsWith('rtmp://')) {
+  if (
+    !recordingAddress.startsWith('rtmps://') &&
+    !recordingAddress.startsWith('rtmp://')
+  ) {
     await plugin.ui.showToast({ message: 'Invalid recording address' })
     return
   }
@@ -105,6 +96,7 @@ const startRecording = async (recordingAddress: string): Promise<void> => {
       role: 'GUEST',
       protocol: 'auto'
     })
+    await plugin.ui.showToast({ message: 'Recording started' })
   } catch (e) {
     console.warn(e)
   }
