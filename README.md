@@ -1,6 +1,6 @@
 # Web App 3 Plugin: Recording RTMP
 
-The recording RTMP plugin can be used to record hte audio and video from any conference. Internally, it sends the media through RTMP to a server that support this kind of streams. It can use RTMP or RTMPS, but it's strongly recommended to use RTMPS.
+The recording RTMP plugin can be used to record the audio and video from any conference. Internally, it sends the media through RTMP to a server that support these kind of streams. It can use RTMP or RTMPS, but it's strongly recommended to use RTMPS.
 
 It can be configured in two modes:
 
