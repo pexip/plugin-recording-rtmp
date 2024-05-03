@@ -22,7 +22,7 @@ If you want to run the plugin with **dynamic RTMP URI** you should remove the `r
 }
 ```
 
-In case you want to define an **static RTMP URI**, you only only have to define it in the file:
+In case you want to define a **static RTMP URI**, you only have to define it in the file:
 
 ```json
 {
