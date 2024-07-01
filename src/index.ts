@@ -1,4 +1,8 @@
-import type { RPCCallPayload, Participant } from '@pexip/plugin-api'
+import type {
+  RPCCallPayload,
+  Participant,
+  InfinityParticipant
+} from '@pexip/plugin-api'
 import { registerPlugin } from '@pexip/plugin-api'
 
 const plugin = await registerPlugin({
@@ -28,6 +32,7 @@ fetch('./config.json')
 
 let recorder: Participant | null = null
 let recorderUri = ''
+let me: InfinityParticipant | null = null
 
 plugin.events.participantLeft.add(async ({ id, participant }) => {
   if (id === 'main' && participant.uri === recorderUri) {
@@ -41,6 +46,10 @@ plugin.events.participantLeft.add(async ({ id, participant }) => {
   }
 })
 
+plugin.events.me.add(async ({ participant }) => {
+  me = participant
+})
+
 const btn = await plugin.ui.addButton(uiState).catch((e) => {
   console.warn(e)
 })
@@ -50,6 +59,11 @@ const onBtnClick = async (): Promise<void> => {
     await stopRecording()
   } else {
     let recordingAddress = config?.recordingAddress ?? ''
+
+    recordingAddress = recordingAddress.replace(
+      /{{\s*displayName\s*}}/gm,
+      me?.displayName ?? ''
+    )
 
     if (recordingAddress === '') {
       const input = await plugin.ui.showForm({
@@ -70,7 +84,7 @@ const onBtnClick = async (): Promise<void> => {
     }
 
     if (recordingAddress !== '') {
-      await startRecording(recordingAddress)
+      await startRecording(encodeURI(recordingAddress))
     }
   }
 }
