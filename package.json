@@ -17,11 +17,12 @@
     "@pexip/plugin-api": "19.2.0"
   },
   "devDependencies": {
-    "eslint": "^8.56.0",
+    "eslint": "^8.1.0",
     "eslint-config-love": "^47.0.0",
+    "eslint-config-prettier": "^8.3.0",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5",
-    "vite": "^5.2.8",
+    "vite": "^5.2.10",
     "vite-plugin-mkcert": "^1.17.5"
   }
 }

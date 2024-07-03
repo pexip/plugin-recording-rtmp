@@ -1,4 +1,8 @@
-import type { RPCCallPayload, Participant } from '@pexip/plugin-api'
+import type {
+  RPCCallPayload,
+  Participant,
+  InfinityParticipant
+} from '@pexip/plugin-api'
 import { registerPlugin } from '@pexip/plugin-api'
 
 const plugin = await registerPlugin({
@@ -28,32 +32,49 @@ fetch('./config.json')
 
 let recorder: Participant | null = null
 let recorderUri = ''
+let me: InfinityParticipant | null = null
+
 plugin.events.participantLeft.add(async ({ id, participant }) => {
   if (id === 'main' && participant.uri === recorderUri) {
     recorder = null
     await changeButtonInactive()
+    if (participant.startTime === null) {
+      await plugin.ui.showToast({ message: 'Start recording failed' })
+    } else {
+      await plugin.ui.showToast({ message: 'Recording stopped' })
+    }
   }
 })
 
-const btn = await plugin.ui.addButton(uiState).catch(e => {
+plugin.events.me.add(({ participant }) => {
+  me = participant
+})
+
+const btn = await plugin.ui.addButton(uiState).catch((e) => {
   console.warn(e)
 })
 
 const onBtnClick = async (): Promise<void> => {
-  if (recorder != null) {
+  if (recorder !== null) {
     await stopRecording()
   } else {
     let recordingAddress = config?.recordingAddress ?? ''
 
+    recordingAddress = recordingAddress.replace(
+      /{{\s*displayName\s*}}/gm,
+      me?.displayName ?? ''
+    )
+
     if (recordingAddress === '') {
       const input = await plugin.ui.showForm({
         title: 'Start recording',
-        description: 'The recording address should be a valid RTMPS address',
+        description: 'The recording address should be a valid RTMPS address.',
         form: {
           elements: {
             recordingAddress: {
               name: 'Recording address',
-              type: 'text'
+              type: 'text',
+              placeholder: 'rtmps://...'
             }
           },
           submitBtnTitle: 'Start recording'
@@ -63,13 +84,21 @@ const onBtnClick = async (): Promise<void> => {
     }
 
     if (recordingAddress !== '') {
-      await startRecording(recordingAddress)
+      await startRecording(encodeURI(recordingAddress))
     }
   }
 }
 btn?.onClick.add(onBtnClick)
 
 const startRecording = async (recordingAddress: string): Promise<void> => {
+  if (
+    !recordingAddress.startsWith('rtmps://') &&
+    !recordingAddress.startsWith('rtmp://')
+  ) {
+    await plugin.ui.showToast({ message: 'Invalid recording address' })
+    return
+  }
+
   recorderUri = recordingAddress
 
   await changeButtonActive()
@@ -81,14 +110,14 @@ const startRecording = async (recordingAddress: string): Promise<void> => {
       role: 'GUEST',
       protocol: 'auto'
     })
+    await plugin.ui.showToast({ message: 'Recording started' })
   } catch (e) {
     console.warn(e)
   }
 }
 
 const stopRecording = async (): Promise<void> => {
-  void plugin.ui.showToast({ message: 'Stopping recorder' })
-  if (recorder != null) {
+  if (recorder !== null) {
     const response = await recorder.disconnect()
     if (response?.data.status === 'success') {
       recorder = null
