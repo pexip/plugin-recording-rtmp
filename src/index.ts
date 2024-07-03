@@ -46,7 +46,7 @@ plugin.events.participantLeft.add(async ({ id, participant }) => {
   }
 })
 
-plugin.events.me.add(async ({ participant }) => {
+plugin.events.me.add(({ participant }) => {
   me = participant
 })
 
