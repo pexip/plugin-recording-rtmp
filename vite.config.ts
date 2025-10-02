@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => {
       cors: true,
       proxy: {
         '/webapp3/branding/manifest.json': {
-          target: 'https://localhost:' + port,
+          target: `https://localhost:${port}`,
           secure: false,
           rewrite: (path) =>
             path.replace(
