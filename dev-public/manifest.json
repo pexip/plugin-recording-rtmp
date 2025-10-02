@@ -1,0 +1,28 @@
+{
+  "version": 0,
+  "meta": { "name": "DEFAULT", "brandVersion": "n/a", "baseColor": "#3c5974" },
+  "brandName": "",
+  "images": {},
+  "translations": {},
+  "applicationConfig": {},
+  "defaultUserConfig": {},
+  "colorPalette": [
+    "#EEF2F6",
+    "#C6D4E2",
+    "#9DB6CD",
+    "#7598B8",
+    "#51799E",
+    "#3D5A76",
+    "#344D65",
+    "#2B4054",
+    "#233443",
+    "#1A2732",
+    "#111A22"
+  ],
+  "plugins": [
+    {
+      "src": "https://localhost:5173",
+      "sandboxValues": ["allow-same-origin"]
+    }
+  ]
+}
