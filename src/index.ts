@@ -18,7 +18,7 @@ const uiState: RPCCallPayload<'ui:button:add'> = {
 }
 
 interface Config {
-  recordingAddress: string
+  recordingUri: string
 }
 
 let config: Config
@@ -58,21 +58,21 @@ const onBtnClick = async (): Promise<void> => {
   if (recorder !== null) {
     await stopRecording()
   } else {
-    let recordingAddress = config?.recordingAddress ?? ''
+    let recordingUri = config?.recordingUri ?? ''
 
-    recordingAddress = recordingAddress.replace(
+    recordingUri = recordingUri.replace(
       /{{\s*displayName\s*}}/gm,
       me?.displayName ?? ''
     )
 
-    if (recordingAddress === '') {
+    if (recordingUri === '') {
       const input = await plugin.ui.showForm({
         title: 'Start recording',
-        description: 'The recording address should be a valid RTMPS address.',
+        description: 'The recording URI should be a valid RTMPS address.',
         form: {
           elements: {
-            recordingAddress: {
-              name: 'Recording address',
+            recordingUri: {
+              name: 'Recording URI',
               type: 'text',
               placeholder: 'rtmps://...'
             }
@@ -80,32 +80,32 @@ const onBtnClick = async (): Promise<void> => {
           submitBtnTitle: 'Start recording'
         }
       })
-      recordingAddress = input.recordingAddress ?? ''
+      recordingUri = input.recordingUri ?? ''
     }
 
-    if (recordingAddress !== '') {
-      await startRecording(encodeURI(recordingAddress))
+    if (recordingUri !== '') {
+      await startRecording(encodeURI(recordingUri))
     }
   }
 }
 btn?.onClick.add(onBtnClick)
 
-const startRecording = async (recordingAddress: string): Promise<void> => {
+const startRecording = async (recordingUri: string): Promise<void> => {
   if (
-    !recordingAddress.startsWith('rtmps://') &&
-    !recordingAddress.startsWith('rtmp://')
+    !recordingUri.startsWith('rtmps://') &&
+    !recordingUri.startsWith('rtmp://')
   ) {
-    await plugin.ui.showToast({ message: 'Invalid recording address' })
+    await plugin.ui.showToast({ message: 'Invalid recording URI' })
     return
   }
 
-  recorderUri = recordingAddress
+  recorderUri = recordingUri
 
   await changeButtonActive()
 
   try {
     recorder = await plugin.conference.dialOut({
-      destination: recordingAddress,
+      destination: recordingUri,
       streaming: 'yes',
       role: 'GUEST',
       protocol: 'auto'

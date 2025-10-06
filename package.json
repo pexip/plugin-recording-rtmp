@@ -14,15 +14,15 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@pexip/plugin-api": "19.2.0"
+    "@pexip/plugin-api": "22.0.0"
   },
   "devDependencies": {
-    "eslint": "^8.1.0",
-    "eslint-config-love": "^47.0.0",
-    "eslint-config-prettier": "^8.3.0",
-    "prettier": "^3.2.5",
-    "typescript": "^5.4.5",
-    "vite": "^5.2.10",
-    "vite-plugin-mkcert": "^1.17.5"
+    "eslint": "^9.36.0",
+    "eslint-config-love": "^130.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.8",
+    "vite-plugin-mkcert": "^1.17.8"
   }
 }
