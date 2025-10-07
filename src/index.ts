@@ -3,7 +3,7 @@ import type {
   Participant,
   InfinityParticipant
 } from '@pexip/plugin-api'
-import { registerPlugin } from '@pexip/plugin-api'
+import { ParticipantActivities, registerPlugin } from '@pexip/plugin-api'
 import { pino } from 'pino'
 
 export const logger = pino()
@@ -37,17 +37,26 @@ let recorder: Participant | null = null
 let recorderUri = ''
 let me: InfinityParticipant | null = null
 
-plugin.events.participantLeft.add(async ({ id, participant }) => {
-  if (id === 'main' && participant.uri === recorderUri) {
-    recorder = null
-    await changeButtonInactive()
+plugin.events.participantsActivities.add(async (activitiesData) => {
+  for (const activityData of activitiesData) {
+    const { roomId, activity } = activityData
+    const { participant, type } = activity
+
     if (
-      typeof participant.startTime === 'number' &&
-      !isNaN(participant.startTime)
+      roomId === 'main' &&
+      type === ParticipantActivities.Leave &&
+      participant.uri === recorderUri
     ) {
-      await plugin.ui.showToast({ message: 'Start recording failed' })
-    } else {
-      await plugin.ui.showToast({ message: 'Recording stopped' })
+      recorder = null
+      await changeButtonInactive()
+      if (
+        typeof participant.startTime === 'number' &&
+        !isNaN(participant.startTime)
+      ) {
+        await plugin.ui.showToast({ message: 'Recording stopped' })
+      } else {
+        await plugin.ui.showToast({ message: 'Start recording failed' })
+      }
     }
   }
 })
