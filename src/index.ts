@@ -25,7 +25,7 @@ interface Config {
   recordingUri: string
 }
 
-let config: Config | null = null
+let config: Config = { recordingUri: '' }
 fetch('./config.json')
   .then(async (res) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- We know that this is a Config
@@ -60,7 +60,7 @@ const btn = await plugin.ui.addButton(uiState)
 
 const onBtnClick = async (): Promise<void> => {
   if (recorder === null) {
-    let recordingUri = config?.recordingUri ?? ''
+    let { recordingUri } = config
 
     recordingUri = recordingUri.replace(
       /{{\s*displayName\s*}}/gm,
