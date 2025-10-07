@@ -47,16 +47,7 @@ plugin.events.participantsActivities.add(async (activitiesData) => {
       type === ParticipantActivities.Leave &&
       participant.uri === recorderUri
     ) {
-      recorder = null
-      await changeButtonInactive()
-      if (
-        typeof participant.startTime === 'number' &&
-        !isNaN(participant.startTime)
-      ) {
-        await plugin.ui.showToast({ message: 'Recording stopped' })
-      } else {
-        await plugin.ui.showToast({ message: 'Start recording failed' })
-      }
+      await handleRecorderLeave(participant)
     }
   }
 })
@@ -103,6 +94,21 @@ const onBtnClick = async (): Promise<void> => {
   }
 }
 btn.onClick.add(onBtnClick)
+
+const handleRecorderLeave = async (
+  participant: Participant | InfinityParticipant
+): Promise<void> => {
+  recorder = null
+  await changeButtonInactive()
+  if (
+    typeof participant.startTime === 'number' &&
+    !isNaN(participant.startTime)
+  ) {
+    await plugin.ui.showToast({ message: 'Recording stopped' })
+  } else {
+    await plugin.ui.showToast({ message: 'Start recording failed' })
+  }
+}
 
 const startRecording = async (recordingUri: string): Promise<void> => {
   if (
