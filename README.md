@@ -15,6 +15,14 @@ It can be configured in two modes:
   recording will start automatically without the need for entering any
   additional data.
 
+  For using this plugin you will need to the following version of **Pexip
+  Infinity**:
+
+  | Plugin Version | Pexip Infinity Version |
+  | -------------- | ---------------------- |
+  | v1.x.x         | v35 or newer           |
+  | v2.x.x         | v38.1 or newer         |
+
 ## Configure plugin
 
 We have a configuration file to choose between the two modes that we commented
