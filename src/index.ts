@@ -4,10 +4,14 @@ import type {
   InfinityParticipant
 } from '@pexip/plugin-api'
 import { registerPlugin } from '@pexip/plugin-api'
+import { pino } from 'pino'
 
+export const logger = pino()
+
+const version = 0
 const plugin = await registerPlugin({
   id: 'recording-rtmp',
-  version: 0
+  version
 })
 
 const uiState: RPCCallPayload<'ui:button:add'> = {
@@ -21,14 +25,13 @@ interface Config {
   recordingUri: string
 }
 
-let config: Config
+let config: Config | null = null
 fetch('./config.json')
   .then(async (res) => {
-    config = await res.json()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- We know that this is a Config
+    config = (await res.json()) as Config
   })
-  .catch((e: Error) => {
-    console.error(e)
-  })
+  .catch(logger.error)
 
 let recorder: Participant | null = null
 let recorderUri = ''
@@ -38,7 +41,10 @@ plugin.events.participantLeft.add(async ({ id, participant }) => {
   if (id === 'main' && participant.uri === recorderUri) {
     recorder = null
     await changeButtonInactive()
-    if (participant.startTime === null) {
+    if (
+      typeof participant.startTime === 'number' &&
+      !isNaN(participant.startTime)
+    ) {
       await plugin.ui.showToast({ message: 'Start recording failed' })
     } else {
       await plugin.ui.showToast({ message: 'Recording stopped' })
@@ -50,14 +56,10 @@ plugin.events.me.add(({ participant }) => {
   me = participant
 })
 
-const btn = await plugin.ui.addButton(uiState).catch((e) => {
-  console.warn(e)
-})
+const btn = await plugin.ui.addButton(uiState)
 
 const onBtnClick = async (): Promise<void> => {
-  if (recorder !== null) {
-    await stopRecording()
-  } else {
+  if (recorder === null) {
     let recordingUri = config?.recordingUri ?? ''
 
     recordingUri = recordingUri.replace(
@@ -80,15 +82,18 @@ const onBtnClick = async (): Promise<void> => {
           submitBtnTitle: 'Start recording'
         }
       })
-      recordingUri = input.recordingUri ?? ''
+      const { recordingUri: uri } = input
+      recordingUri = uri
     }
 
     if (recordingUri !== '') {
       await startRecording(encodeURI(recordingUri))
     }
+  } else {
+    await stopRecording()
   }
 }
-btn?.onClick.add(onBtnClick)
+btn.onClick.add(onBtnClick)
 
 const startRecording = async (recordingUri: string): Promise<void> => {
   if (
@@ -111,8 +116,8 @@ const startRecording = async (recordingUri: string): Promise<void> => {
       protocol: 'auto'
     })
     await plugin.ui.showToast({ message: 'Recording started' })
-  } catch (e) {
-    console.warn(e)
+  } catch (error) {
+    logger.warn(error)
   }
 }
 
@@ -131,12 +136,12 @@ const changeButtonActive = async (): Promise<void> => {
   uiState.icon = 'IconStopRound'
   uiState.tooltip = 'Stop recording'
   uiState.isActive = true
-  await btn?.update(uiState)
+  await btn.update(uiState)
 }
 
 const changeButtonInactive = async (): Promise<void> => {
   uiState.icon = 'IconPlayRound'
   uiState.tooltip = 'Record'
   uiState.isActive = false
-  await btn?.update(uiState)
+  await btn.update(uiState)
 }

@@ -6,7 +6,6 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "test": "jest --detectOpenHandles --silent",
     "lint": "eslint ."
   },
   "keywords": [],
@@ -14,15 +13,17 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@pexip/plugin-api": "22.0.0"
+    "@pexip/plugin-api": "22.0.0",
+    "pino": "^10.0.0"
   },
   "devDependencies": {
-    "eslint": "^9.36.0",
+    "@types/node": "^24.7.0",
+    "eslint": "^9.37.0",
     "eslint-config-love": "^130.0.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
-    "vite": "^7.1.8",
-    "vite-plugin-mkcert": "^1.17.8"
+    "vite": "^7.1.9",
+    "vite-plugin-mkcert": "^1.17.9"
   }
 }
