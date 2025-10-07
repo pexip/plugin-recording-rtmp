@@ -3,11 +3,15 @@ import type {
   Participant,
   InfinityParticipant
 } from '@pexip/plugin-api'
-import { registerPlugin } from '@pexip/plugin-api'
+import { ParticipantActivities, registerPlugin } from '@pexip/plugin-api'
+import { pino } from 'pino'
 
+export const logger = pino()
+
+const version = 0
 const plugin = await registerPlugin({
   id: 'recording-rtmp',
-  version: 0
+  version
 })
 
 const uiState: RPCCallPayload<'ui:button:add'> = {
@@ -21,27 +25,29 @@ interface Config {
   recordingUri: string
 }
 
-let config: Config
+let config: Config = { recordingUri: '' }
 fetch('./config.json')
   .then(async (res) => {
-    config = await res.json()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- We know that this is a Config
+    config = (await res.json()) as Config
   })
-  .catch((e: Error) => {
-    console.error(e)
-  })
+  .catch(logger.error)
 
 let recorder: Participant | null = null
 let recorderUri = ''
 let me: InfinityParticipant | null = null
 
-plugin.events.participantLeft.add(async ({ id, participant }) => {
-  if (id === 'main' && participant.uri === recorderUri) {
-    recorder = null
-    await changeButtonInactive()
-    if (participant.startTime === null) {
-      await plugin.ui.showToast({ message: 'Start recording failed' })
-    } else {
-      await plugin.ui.showToast({ message: 'Recording stopped' })
+plugin.events.participantsActivities.add(async (activitiesData) => {
+  for (const activityData of activitiesData) {
+    const { roomId, activity } = activityData
+    const { participant, type } = activity
+
+    if (
+      roomId === 'main' &&
+      type === ParticipantActivities.Leave &&
+      participant.uri === recorderUri
+    ) {
+      await handleRecorderLeave(participant)
     }
   }
 })
@@ -50,15 +56,11 @@ plugin.events.me.add(({ participant }) => {
   me = participant
 })
 
-const btn = await plugin.ui.addButton(uiState).catch((e) => {
-  console.warn(e)
-})
+const btn = await plugin.ui.addButton(uiState)
 
 const onBtnClick = async (): Promise<void> => {
-  if (recorder !== null) {
-    await stopRecording()
-  } else {
-    let recordingUri = config?.recordingUri ?? ''
+  if (recorder === null) {
+    let { recordingUri } = config
 
     recordingUri = recordingUri.replace(
       /{{\s*displayName\s*}}/gm,
@@ -80,15 +82,33 @@ const onBtnClick = async (): Promise<void> => {
           submitBtnTitle: 'Start recording'
         }
       })
-      recordingUri = input.recordingUri ?? ''
+      const { recordingUri: uri } = input
+      recordingUri = uri
     }
 
-    if (recordingUri !== '') {
+    if (typeof recordingUri !== 'undefined' && recordingUri !== '') {
       await startRecording(encodeURI(recordingUri))
     }
+  } else {
+    await stopRecording()
   }
 }
-btn?.onClick.add(onBtnClick)
+btn.onClick.add(onBtnClick)
+
+const handleRecorderLeave = async (
+  participant: Participant | InfinityParticipant
+): Promise<void> => {
+  recorder = null
+  await changeButtonInactive()
+  if (
+    typeof participant.startTime === 'number' &&
+    !isNaN(participant.startTime)
+  ) {
+    await plugin.ui.showToast({ message: 'Recording stopped' })
+  } else {
+    await plugin.ui.showToast({ message: 'Start recording failed' })
+  }
+}
 
 const startRecording = async (recordingUri: string): Promise<void> => {
   if (
@@ -111,8 +131,8 @@ const startRecording = async (recordingUri: string): Promise<void> => {
       protocol: 'auto'
     })
     await plugin.ui.showToast({ message: 'Recording started' })
-  } catch (e) {
-    console.warn(e)
+  } catch (error) {
+    logger.warn(error)
   }
 }
 
@@ -131,12 +151,12 @@ const changeButtonActive = async (): Promise<void> => {
   uiState.icon = 'IconStopRound'
   uiState.tooltip = 'Stop recording'
   uiState.isActive = true
-  await btn?.update(uiState)
+  await btn.update(uiState)
 }
 
 const changeButtonInactive = async (): Promise<void> => {
   uiState.icon = 'IconPlayRound'
   uiState.tooltip = 'Record'
   uiState.isActive = false
-  await btn?.update(uiState)
+  await btn.update(uiState)
 }
