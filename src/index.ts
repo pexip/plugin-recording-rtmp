@@ -86,7 +86,7 @@ const onBtnClick = async (): Promise<void> => {
       recordingUri = uri
     }
 
-    if (recordingUri !== '') {
+    if (typeof recordingUri !== 'undefined' && recordingUri !== '') {
       await startRecording(encodeURI(recordingUri))
     }
   } else {
