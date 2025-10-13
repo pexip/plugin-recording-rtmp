@@ -34,7 +34,7 @@ fetch('./config.json')
   .catch(logger.error)
 
 let recorder: Participant | null = null
-let recorderUri = ''
+let recorderUri: string | null = null
 let me: InfinityParticipant | null = null
 
 plugin.events.participantsActivities.add(async (activitiesData) => {
@@ -99,6 +99,7 @@ const handleRecorderLeave = async (
   participant: Participant | InfinityParticipant
 ): Promise<void> => {
   recorder = null
+  recorderUri = null
   await changeButtonInactive()
   if (
     typeof participant.startTime === 'number' &&
