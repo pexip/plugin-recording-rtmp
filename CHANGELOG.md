@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.1] 2025-10-13
+
+### Fixed
+
+- Avoid displaying stopped recording notification when a user leaves the
+  conference.
+
 ## [2.0.0] 2025-10-07
 
 ### Changed
