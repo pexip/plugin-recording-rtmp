@@ -67,33 +67,6 @@ displayName = "John Smith"
 recordingUri = "rtmps://example-rtmp.pexip.com/my-recordings/John%20Smith"
 ```
 
-### Configuration requirements starting from Infinity v37
-
-The `id` of the plugin in the manifest should be `recording-rtmp` to support the
-new Widget concept.
-
-In addition, because of the tightened security in v37,
-`"sandboxValues": ["allow-same-origin"]` needs to be added to the plugin config
-in the manifest.
-
-More information about the above change can be found here:
-https://developer.pexip.com/docs/infinity/web/plugins/webapp-3/sandbox-security
-
-Your manifest will now look something like the following.
-
-```
-{
-  ...
-  "plugins": [
-    {
-    	"id": "recording-rtmp",
-    	"src": "...",
-      "sandboxValues": ["allow-same-origin"]
-    }
-  ]
-}
-```
-
 ## Configure for development
 
 If you want to test the plugin in your Pexip Infinity deployment, you will need
@@ -117,9 +90,6 @@ Example `.env` file:
 VITE_INFINITY_TARGET=https://your-pexip-infinity-server.com
 VITE_DEV_SERVER_PORT=5173
 ```
-
-When running the plugin in development mode, you can edit the configuration file
-`./dev-public/config.json` to set the `recordingUri` parameter.
 
 ## Run for development
 
