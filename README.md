@@ -97,18 +97,25 @@ Your manifest will now look something like the following.
 ## Configure for development
 
 If you want to test the plugin in your Pexip Infinity deployment, you will need
-to configure the `infinityUrl` in a `.env` file. You can create the file from
-the `.env.example` file that you can find in the root of the project.
+to create a `.env` file. You can create it from the `.env.example` file that you
+can find in the root of the project:
 
 ```bash
 $ cp .env.example .env
 ```
 
-And now edit the file to set the `infinityUrl` variable with the URL of your
-Pexip Infinity deployment:
+And now edit the file to configure the following variables:
+
+| Variable               | Required | Default | Description                                          |
+| ---------------------- | -------- | ------- | ---------------------------------------------------- |
+| `VITE_INFINITY_TARGET` | Yes      | —       | The URL of your Pexip Infinity deployment             |
+| `VITE_DEV_SERVER_PORT` | No       | `5173`  | The port used by the Vite dev server                  |
+
+Example `.env` file:
 
 ```env
-VITE_INFINITY_URL=https://your-pexip-infinity-url
+VITE_INFINITY_TARGET=https://your-pexip-infinity-server.com
+VITE_DEV_SERVER_PORT=5173
 ```
 
 When running the plugin in development mode, you can edit the configuration file

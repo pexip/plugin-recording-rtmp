@@ -127,6 +127,7 @@ const startRecording = async (recordingUri: string): Promise<void> => {
   try {
     recorder = await plugin.conference.dialOut({
       destination: recordingUri,
+      remote_display_name: 'Recording',
       streaming: 'yes',
       role: 'GUEST',
       protocol: 'auto'
@@ -134,6 +135,8 @@ const startRecording = async (recordingUri: string): Promise<void> => {
     await plugin.ui.showToast({ message: 'Recording started' })
   } catch (error) {
     logger.warn(error)
+    recorderUri = null
+    await changeButtonInactive()
   }
 }
 
